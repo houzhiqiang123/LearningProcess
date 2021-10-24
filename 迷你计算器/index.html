@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>迷你计算器</title>
+    <style>
+        body {
+            margin: 20px;
+        }
+        #app {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 175px;
+            height: 285px;
+            padding: 10px;
+        }
+        #input-box {
+            text-align: right;
+            width: 161px;
+            margin-bottom: 10px;
+            height: 30px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            padding: 0 5px;
+            background: white;
+            color: #666;
+        }
+        #app .btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            cursor: pointer;
+            background: white;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 19px;
+        }
+        #app .btn-double {
+            width: 84px;
+        }
+        #app .btn:hover {
+            background-color: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="app">
+        <result-box :get-value="resultValue"></result-box>
+        <calc-box>
+            <button class="btn" @click="clear">c</button>
+            <button class="btn" @click="sign">+/-</button>
+            <button class="btn" @click="symbol('x')">x</button>
+            <button class="btn" @click="symbol('÷')">÷</button>
+            <button class="btn" @click="input('1')">1</button>
+            <button class="btn" @click="input('2')">2</button>
+            <button class="btn" @click="input('3')">3</button>
+            <button class="btn" @click="symbol('-')">-</button>
+            <button class="btn" @click="input('4')">4</button>
+            <button class="btn" @click="input('5')">5</button>
+            <button class="btn" @click="input('6')">6</button>
+            <button class="btn" @click="symbol('+')">+</button>
+            <button class="btn" @click="input('7')">7</button>
+            <button class="btn" @click="input('8')">8</button>
+            <button class="btn" @click="input('9')">9</button>
+            <button class="btn" @click="symbol('%')">%</button>
+            <button class="btn" @click="input('0')">0</button>
+            <button class="btn" @click="point">.</button>
+            <button class="btn btn-double" @click="calculate">=</button>
+
+
+        </calc-box>
+    </div>
+    
+<script src="./js/vue.js"></script>
+<script>
+//去掉提示
+Vue.config.productionTip = false
+
+//计算器结果框组件
+const resultBox = {
+    //父子通信
+    props : ['getValue'],
+    //计算属性
+    computed : {
+        value () {
+            return this.getValue
+        }
+    },
+    template : `
+        <input id="input-box" type="text" v-model="value" readonly>
+    `
+}
+
+//计算器输入面板组件
+const calcBox = {
+    template : `
+        <div id="calc-box">
+            <slot></slot>
+        </div>
+    `
+}
+
+
+//vue实例
+const app = new Vue({
+    el : '#app',
+    data : {
+        resultValue : 0,
+    },
+
+    //组件
+    components : {
+        //计算器结果框组件
+        'result-box' : resultBox,
+        //计算器输入面板组件
+        'calc-box' : calcBox,
+    },
+
+    //方法
+    methods : {
+        //输入数值
+        input (param) {
+            //拒绝开始0和反复0,并且防止0.被和谐掉,以及0可以加其他数字
+            if(parseInt(this.resultValue) === 0 && !/0[\.|\s]/.test(this.resultValue)) {
+                this.resultValue = param
+            }else {
+                this.resultValue += param
+            }
+        },
+
+        //加减乘除算术公式
+        symbol (param) {
+            this.resultValue += ' ' + param + ' '
+        },
+
+        //正负号设置
+        sign () {
+            //转换字符串
+            const strValue = this.toStr()
+
+            //得到最后一位数值
+            let lastNumber = strValue.substring(strValue.lastIndexOf(' '))
+
+            //得到之前的数值+符号
+            let prevNumber = strValue.substr(0, strValue.lastIndexOf(' '))
+
+            //判断当前是否有正负号
+            if(lastNumber.indexOf('-') === -1) {
+                lastNumber = ' -' + lastNumber.trim()
+            }else {
+                lastNumber = ' ' + lastNumber.trim().substr(1)
+            }
+
+            //合并
+            this.resultValue = prevNumber + lastNumber
+        },
+
+        //计算结果
+        calculate() {
+            //如果正确就执行，如果错误就提示
+            try {
+                //替换算术符号
+                const strValue = this.resultValue.replace('x', '*').replace('÷', '/')
+                //计算
+                this.resultValue = eval(strValue) 
+            } catch (error) {
+                alert('无法正确计算')
+            }
+        },
+
+        //清零
+        clear () {
+            this.resultValue = 0
+        },
+
+        //处理小数点
+        point () {
+            //转换字符串
+            const strValue = this.toStr()
+
+            //得到最后一位数值
+            lastNumber = strValue.substring(strValue.lastIndexOf(' '))
+
+            //判断是否已存在小数点
+            if(lastNumber.indexOf('.') !== -1) {
+                return
+            }else {
+                this.resultValue += '.'
+            }
+        },
+
+        //转换成字符串
+        toStr () {
+            return this.resultValue.toString()
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>

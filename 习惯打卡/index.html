@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>习惯打卡</title>
+    <style>
+        h3 {
+            color: #666;
+            text-indent: 2px;
+        }
+        .input {
+            width: 98%;
+            height: 35px;
+            border-radius: 4px;
+            border: 0;
+            background-color: #eee;
+            padding: 2px 5px;
+            color: #666;
+        }
+        .list {
+            list-style-type: none;      /*不需要边距和小圆点*/
+            margin: 10px 0;
+            padding: 0;
+        }
+        .list li {
+            padding: 8px 5px;
+            height: 30px;
+            line-height: 30px;
+            border-bottom: 1px solid #ccc;
+            font-size: 14px;
+            color: #666;
+            user-select: none;      /*取消选定*/
+        }
+        .list li span.icon {
+            display: inline-block;
+            background-repeat: no-repeat;
+            background-position: left center;
+            text-indent: 32px;
+            cursor: pointer;
+        }
+        .list li:hover {
+            background: #eee;
+        }
+        .list li:hover .delete {
+            display: inline-block;
+        }
+        .list li em {
+            float: right;
+            padding-right: 5px;
+            font-style: normal;
+        }
+        .list li .delete {
+            border: 0;
+            background-color: transparent;
+            background-image: url('./img/delete.svg');
+            background-repeat: no-repeat;
+            text-indent: -9999px;
+            cursor: pointer;
+            width: 20px;
+            display: none;
+        }
+        .total {
+            text-align: center;
+            color: #666;
+        }
+        [v-clock] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    
+<div id="app">
+    <!-- 头部 -->
+    <header>
+        <h3>习惯打卡</h3>
+        <input type="text" class="input" @keyup.enter="addHabit" v-model="title" placeholder="请输入习惯名称，按回车创建">
+    </header>
+    <!-- 主体 -->
+    <section v-cloak>
+        <ul class="list">
+            <li v-for="(item, index) in habits">
+                <span class="icon" v-show="today !== item.today" @click="setCount(item.id)" :style="{backgroundImage: item.url}">{{item.title}}</span>
+                <span class="icon" v-show="today === item.today" @click="setCount(item.id)" style="background-image: url('img/success.svg')">{{item.title}}</span>
+                <em><b>{{item.count}}</b>天 / 共坚持 <button class="delete" @click="deleteLocalHabit(index)">删除</button></em>
+            </li>
+        </ul>
+        <p class="total">共有习惯：{{total}} 个，最大坚持：{{max}} 天</p>
+    </section>
+</div>
+    
+<script src="./js/vue.js"></script>
+<script>
+//去掉提示
+Vue.config.productionTip = false
+
+//vue实例
+const app = new Vue({
+    el : '#app',
+
+    //数据
+    data () {
+        return {
+            title : '',                 //习惯标题
+            habits : [],                //习惯列表
+            today : this.getToday()     //今日日期
+        }
+    },
+
+    //计算属性
+    computed : {
+        //习惯总数
+        total () {
+            return this.habits.length
+        },
+
+        //最大坚持天数
+        max () {
+            return Math.max.apply(null, this.habits.map(item => {
+                return item.count
+            }))
+        }
+    },
+
+    //实例化后的钩子
+    created() {
+        //获取本地存储的习惯列表
+        this.habits = JSON.parse(this.getLocalHabits()) || []
+
+    },
+
+    //方法
+    methods : {
+        //添加一条习惯
+        addHabit () {
+            //时间戳
+            const time = Date.now()
+
+            //一条习惯对象
+            const habit = {
+                //id, 时间戳
+                id : time,
+                //随机的URL图标01-15
+                url : 'url(img/' + this.getImgName() + '.svg) ',
+                //习惯标题
+                title : this.title,
+                //打卡统计
+                count : 0,
+                //写入今天的日期
+                today : ''
+            }
+
+            //添加到数据列表开头位置
+            this.habits.unshift(habit)
+
+            //更新到本地存储
+            this.setLocalHabits()
+
+            //清空输入框
+            this.title = ''
+        },
+
+        //累加打卡量
+        setCount (id) {
+            //通过ID查找匹配的对象
+            const obj = this.habits.find( obj => {
+                return obj.id === id
+            });
+            //判断是否已经打卡
+            if(obj.today !== this.getToday()) {
+                //累加
+                obj.count++
+
+                //设置今天的日期
+                obj.today = this.getToday()
+            }
+           
+            //更新到本地存储
+            this.setLocalHabits()
+        },
+
+        //删除本地存储
+        deleteLocalHabit (index) {
+            //后悔机制
+            if(confirm('确定删除吗？')){
+                //执行删除
+                this.habits.splice(index, 1)
+                //更新本地存储
+                this.setLocalHabits()
+            }
+        },
+
+         //01-15图标随机数
+        getImgName () {
+             //随机1-15随机数
+             const name = Math.floor(Math.random() * 15 + 1)    //Math.floor()整数，Math.random()随机数
+
+             //判断个位数，补0
+             if(name < 10) {
+                 return '0' + name
+             }
+                return name
+        },
+
+        //获取今天年月日
+        getToday () {
+            //时间对象
+            const date = new Date()
+            //返回当天日期
+            return date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate();
+        },
+
+        //更新到本地存储
+        setLocalHabits () {
+            //本地存储
+            localStorage.setItem('habits-0', JSON.stringify(this.habits))   //JSON.stringify转换成JSON格式
+        },
+            
+        //获取本地存储
+        getLocalHabits () {
+            //获取本地
+            return localStorage.getItem('habits-0')
+        }
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

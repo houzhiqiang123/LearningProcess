@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./js/vue.js"></script>
+    <title>手机号查询</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        .search {
+            display: flex;
+            width: 95%;
+            margin: 10px;
+        }
+        .search input.input {
+            flex: 3;
+            margin: 2px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: white;
+            height: 30px;
+            padding: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        .search button.button {
+            flex: 1;
+            margin: 2px;
+            border-radius: 6px;
+            border: 0;
+            background: #666;
+            color: white;
+            cursor: pointer;
+        }
+        .search button.button:hover {
+            background: #333;
+        }
+        .search button.button:active {
+            background: #666;
+        }
+        .table {
+            width: 95%;
+            margin: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .table tr.gray {
+            background: #eee;
+        }
+        .table th {
+            height: 35px;
+            line-height: 30px;
+            color: #444;
+            background: #eee;
+        }
+        .table td {
+            height: 35px;
+            line-height: 35px;
+        }
+        .table td.left {
+            width: 35%;
+            text-align: right;
+            padding-right: 5px;
+        }
+        .table td.right {
+            width: 65%;
+            text-align: left;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 搜索 -->
+    <div class="search">
+        <input type="text" class="input" placeholder="请输入手机号前7位">
+        <button class="button">查询</button>
+    </div>
+
+    <!-- 表格 -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="2">查询结果</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="left">手机号码段： </td>
+                <td class="right">111</td>
+            </tr>
+            <tr class="gray">
+                <td class="left">卡号归属地： </td>
+                <td class="right">111</td>
+            </tr>
+            <tr>
+                <td class="left">运营商： </td>
+                <td class="right">111</td>
+            </tr>
+            <tr class="gray">
+                <td class="left">区号： </td>
+                <td class="right">111</td>
+            </tr>
+            <tr>
+                <td class="left">邮编： </td>
+                <td class="right">111</td>
+            </tr>
+            <tr class="gray">
+                <td colspan="2">号码归属地数据由聚合数据提供 </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
