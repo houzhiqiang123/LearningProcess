@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8">
+		<title>表单元素（上）</title>
+	</head>
+	<body>
+		
+		
+    <form method="get" id="register" name="reg" action="http://www.baidu.com" target="_blank" autocomplete="off">
+		<fieldset>
+             <legend>注册分组</legend>
+			<label for="user">用户名：</label>
+			<input name="user" autofocus="" id="user"><br>
+			 <!-- disabled="" -->
+		</fieldset>	
+		
+	    <fieldset>
+	        <label> 
+			<input name="user" autocomplete="off">	<br>
+			<!-- value="123" -->
+			</label>
+		</fieldset>	
+		<fieldset>	
+			<label>
+			电子邮件：<input name="email" form="register">
+				<button>提交</button>
+		    </label>
+		</fieldset>	
+		    <button type="submit" formaction="http://www.sogou.com">提交</button>
+		    <button type="reset">重置</button>
+		    <button type="button">按钮</button>		
+	</form>	
+
+		
+	</body>
+</html>

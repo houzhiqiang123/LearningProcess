@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head lang="zh-cn">
+		<meta charset="utf-8">
+		<title>表单元素（下）</title>
+	</head>
+	<body>
+		
+	<form action="http://li.cc" novalidata oninput="res.value = num1.valueAsNumber * num2.valueAsNumber">
+		
+		<!-- !-- <select name="fruit" size="5" multiple>
+			<optgroup label="水果">
+				<option value="1">苹果</option>
+				<option value="2" selected>香蕉</option>
+				<option value="3">橘子</option>			
+			</optgroup>
+		
+		    <optgroup label="粗粮">
+		    	<option value="4">小米</option>
+		    	<option value="5">大米</option>
+		    	<option value="6">粮食</option>	
+		    </optgroup>
+		</select> -->  
+		
+		<!-- <textarea name="content" rows="10" cols="5" wrap="hard">请留下您的建议！</textarea> -->
+		
+		<!-- <input type="number" id="num1"> x <input type="number" id="num2"> = -->
+		<!-- <output for="num1 num2" name="res"> -->
+		
+		<!-- <input type="text" required> -->
+		
+		<!-- <input type="number" min="10" max="100" > -->
+		
+		<input type="text" placeholder="请输入区号+座机" required pattern="^[\d]｛2,4｝\-[\d]｛6,8｝$">
+		<button >提交</button>
+		
+		
+		
+	</form>	
+		
+		
+	</body>
+</html>
