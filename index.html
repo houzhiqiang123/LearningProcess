@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todolist</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <style>
+        .count {
+            margin: 0 10px;
+            width: 40px;
+            text-align: center;
+            color: red;
+            font-weight: bold;
+            border-style: none;
+        }
+        .red {
+            background: red;
+        }
+        form {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1 class="h1 text-center">todolist</h1><hr>
+        <form class="form-inline">
+            <div class="form-group">
+              <label for="search">搜索商品：</label>
+              <input v-model="searchProduct" type="text" class="form-control" id="search" placeholder="请输入搜索的商品名称">
+            </div>
+            <button @click="search" @click.prevent type="submit" class="btn btn-default">搜索</button>
+          </form>
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="name">商品名称：</label>
+                <input v-model="addName" id="name" class="form-control" type="text" placeholder="请输入添加的商品名称">
+            </div>
+            <div class="form-group">
+                <label for="price">商品价格：</label>
+                <input oninput="value=value.replace(/[^\d]/g, '')" v-model="addPrice" id="price" class="form-control" type="text" placeholder="请输入添加商品的价格">
+            </div>
+            <button @click.prevent @click="addProduct"  class="btn btn-default">添加</button>
+        </form>
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <td>选择</td>
+                    <td>商品名称</td>
+                    <td>商品价格</td>
+                    <td>数量</td>
+                    <td>删除</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr @click="select(product)" v-for="(product,index) in productList" :class="product.isRed ? 'red' : ''">
+                    <td>
+                        <input @click.stop v-model="checkedList" :value="index" type="checkbox"/>
+                    </td>
+                    <td>{{product.productName}}</td>
+                    <td>{{product.productPrice}}</td>
+                    <td><button @click="addCount(product)" class="glyphicon glyphicon-plus" @click.stop></button> <input oninput="value=value.replace(/[^\d]/g, '')" @blur="blur(product,index)" ref="productCount" :value="product.count"  maxlength="4" type="text" class="count" @click.stop></input> <button @click="subtract(product)" class="glyphicon glyphicon-minus" @click.stop></button></td>
+                    <td><button @click="del(index)" @click.stop class=" btn-default glyphicon glyphicon-remove btn-xs"></button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <button  @click="delChecked">删除选中</button>
+                    </td>
+                    <td colspan="4">总价：{{total}}元</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    new Vue({
+        el : '#app',
+        
+        methods : {
+            //点击切换isRed=true
+            select(product){
+                product.isRed = !product.isRed
+            },
+            //删除单项商品
+            del(index){
+                this.productList.splice(index,1)
+            },
+            //删除选中
+            delChecked(){
+                this.productList = this.productList.filter((element,index)=>{
+                   if(!this.checkedList.includes(index)){
+                       return element
+                   }
+                })
+                this.checkedList = []
+            },
+            //添加商品数量
+            addCount(product){
+                if(product.count >= 9999){
+                    product.count = 9999
+                }else{
+                    product.count = product.count + 1
+                }
+            },
+            //减少商品数量
+            subtract(product){
+                if(product.count <= 1){
+                    product.count = 1
+                }else{
+                    product.count = product.count - 1 
+                }
+            },
+            //添加商品
+            addProduct(){
+                this.productList.push({
+                    productName :  this.addName.trim(),
+                    productPrice : this.addPrice.trim(),
+                    isRed : false,
+                    count : 1
+                })
+            },
+            //搜索商品
+            search(){
+                this.productList = this.productList.filter((ele,index)=>{
+                    if(ele.productName.includes(this.searchProduct)){
+                        return ele
+                    }
+                })
+                
+            },
+            //获取输入的数量
+            blur(product,index){
+                if(this.$refs.productCount[index].value == ""){
+                    alert('最少数量为一件')
+                    this.$refs.productCount[index].value = 1
+                    product.count = 1
+                }else{
+                    product.count = parseInt(this.$refs.productCount[index].value)
+                }
+            }
+        },
+        computed : {
+            //获取isRed=true商品的总价
+            total(){
+                let sum = this.sum
+                this.productList.forEach(element => {
+                    if(element.isRed){
+                        sum += element.productPrice * element.count
+                    }
+                })
+                return sum
+                
+            }
+        },
+        data : {
+            num : '',
+            searchProduct : '',
+            addName : '',
+            addPrice : '',
+            checkedList : [],
+            sum : 0,
+            productList : [
+                {
+                    productName : '衣服',
+                    productPrice : 120,
+                    isRed : false,
+                    count : 1
+                },
+                {
+                    productName : '裤子',
+                    productPrice : 136,
+                    isRed : false,
+                    count : 1
+                },
+                {
+                    productName : '鞋子',
+                    productPrice : 299,
+                    isRed : false,
+                    count : 1
+                },
+                {
+                    productName : '帽子',
+                    productPrice : 20,
+                    isRed : false,
+                    count : 1
+                },
+                {
+                    productName : '短袖',
+                    productPrice : 99,
+                    isRed : false,
+                    count : 1
+                }
+            ]
+        },
+    })
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
